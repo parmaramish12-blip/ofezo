@@ -1,88 +1,94 @@
-import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { useNavigate } from "react-router-dom";
-import "../styles/Home.css";
+import SearchBar from "../components/SearchBar";
+import "./Home.css";
 
-export default function Home() {
+const Home = () => {
   const [offers, setOffers] = useState([]);
-  const [city, setCity] = useState("Vadodara");
+  const [loading, setLoading] = useState(true);
+
+  const [city, setCity] = useState("");
   const [category, setCategory] = useState("");
 
-  const navigate = useNavigate();
+  const fetchOffers = async (selectedCity = "", selectedCategory = "") => {
+    try {
+      let q = collection(db, "offers");
 
-  const loadOffers = async () => {
-    const snap = await getDocs(collection(db, "offers"));
-    const today = new Date();
+      const conditions = [];
 
-    const list = snap.docs
-      .map((d) => ({ id: d.id, ...d.data() }))
-      .filter(
-        (o) =>
-          o.isActive === true &&
-          (!o.expiryDate || new Date(o.expiryDate) >= today)
-      );
+      if (selectedCity) {
+        conditions.push(where("city", "==", selectedCity));
+      }
 
-    setOffers(list);
+      if (selectedCategory) {
+        conditions.push(where("category", "==", selectedCategory));
+      }
+
+      if (conditions.length > 0) {
+        q = query(q, ...conditions);
+      }
+
+      const snapshot = await getDocs(q);
+
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setOffers(data);
+    } catch (error) {
+      console.error("Error loading offers", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    loadOffers();
+    fetchOffers();
   }, []);
 
-  const filtered = offers.filter(
-    (o) =>
-      (city ? o.city === city : true) &&
-      (category ? o.category === category : true)
-  );
-
   return (
-    <div className="home-page">
+    <div className="home-container">
+      {/* SEARCH BAR */}
+      <SearchBar
+        city={city}
+        setCity={setCity}
+        category={category}
+        setCategory={setCategory}
+        onSearch={() => fetchOffers(city, category)}
+      />
 
-      {/* HERO */}
-      <section className="hero">
-        <h1>Discover Best Local Offers</h1>
-        <p>Search deals near your city</p>
+      <h2>Latest Offers</h2>
 
-        <div className="search-box">
-          <select value={city} onChange={(e) => setCity(e.target.value)}>
-            <option>Vadodara</option>
-            <option>Anand</option>
-            <option>Ahmedabad</option>
-          </select>
+      {loading && <p>Loading offers...</p>}
 
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="">All Categories</option>
-            <option>Food</option>
-            <option>Electronics</option>
-            <option>Furniture</option>
-            <option>Fashion</option>
-          </select>
+      {!loading && offers.length === 0 && (
+        <p>No offers found</p>
+      )}
 
-          <button>Search</button>
-        </div>
-      </section>
+      <div className="offers-grid">
+        {offers.map((offer) => (
+          <div className="offer-card" key={offer.id}>
+            <h3>{offer.title || "Special Offer"}</h3>
+            <p>{offer.description}</p>
 
-      {/* OFFERS */}
-      <section className="offers-section">
-        <h2>Nearby Offers</h2>
+            <p>
+              <strong>Category:</strong> {offer.category}
+            </p>
 
-        <div className="offer-grid">
-          {filtered.map((o) => (
-            <div
-              key={o.id}
-              className="offer-card"
-              onClick={() => navigate(`/offer/${o.id}`)}
-            >
-              <h3>{o.title}</h3>
-              <p className="shop">🏪 {o.shopName || "Local Shop"}</p>
-              <p className="city">{o.city}</p>
-              <strong>₹ {o.price}</strong>
-            </div>
-          ))}
-        </div>
-      </section>
+            <p>
+              <strong>City:</strong> {offer.city}
+            </p>
 
+            <p>
+              <strong>Price:</strong> ₹{offer.price}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
-}
+};
+
+export default Home;

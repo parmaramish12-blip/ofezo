@@ -1,0 +1,38 @@
+.search-wrapper {
+  background: #f7f9fc;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.search-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.search-box {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.search-box select,
+.search-box button {
+  padding: 14px 18px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  min-width: 180px;
+}
+
+.search-box button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.search-box button:hover {
+  background: #1d4ed8;
+}
