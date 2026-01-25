@@ -1,0 +1,40 @@
+.static-page {
+  background: #f6f8fc;
+  min-height: 100vh;
+}
+
+.static-hero {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: white;
+  padding: 70px 20px;
+  text-align: center;
+}
+
+.static-hero h1 {
+  font-size: 42px;
+}
+
+.static-content {
+  background: white;
+  max-width: 900px;
+  margin: -40px auto 40px;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+}
+
+.static-content h2 {
+  margin-top: 25px;
+}
+
+.static-content ul {
+  margin-top: 15px;
+  padding-left: 20px;
+}
+
+.contact-box {
+  margin-top: 20px;
+  background: #f6f8fc;
+  padding: 20px;
+  border-radius: 12px;
+}
