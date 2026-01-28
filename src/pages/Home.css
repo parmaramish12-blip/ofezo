@@ -1,18 +1,25 @@
 .home-container {
-  padding: 40px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
 }
 
+
+/* heading */
 .home-container h2 {
   margin-bottom: 20px;
   font-size: 24px;
 }
 
+/* grid */
 .offers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
 }
 
+/* card */
 .offer-card {
   background: #ffffff;
   border-radius: 12px;

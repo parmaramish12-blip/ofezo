@@ -1,0 +1,58 @@
+.careers-container {
+  padding: 40px 20px;
+}
+
+.careers-hero {
+  text-align: center;
+  padding: 70px 20px;
+  background: #f8fafc;
+  border-radius: 14px;
+  margin-bottom: 50px;
+}
+
+.careers-hero h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.careers-hero p {
+  font-size: 16px;
+  color: #555;
+}
+
+.careers-content {
+  max-width: 1000px;
+  margin: auto;
+}
+
+.careers-section {
+  margin-bottom: 45px;
+}
+
+.careers-section h2 {
+  font-size: 26px;
+  margin-bottom: 12px;
+}
+
+.careers-section p {
+  font-size: 16px;
+  color: #444;
+  line-height: 1.7;
+}
+
+.careers-section ul {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.careers-section li {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.careers-section.highlight {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}

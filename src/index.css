@@ -7,19 +7,19 @@
 html,
 body,
 #root {
-  height: 100%;
+  width: 100%;
+  min-height: 100%;
 }
 
-body {
-  font-family: "Inter", sans-serif;
-  background: #f8fafc;
-}
-.app-wrapper {
-  min-height: 100vh;
+/* 🔥 THIS IS THE MAIN FIX */
+#root {
   display: flex;
   flex-direction: column;
 }
 
-.page-content {
-  flex: 1;
+/* stop horizontal scrollbar */
+body {
+  overflow-x: hidden;
+  font-family: "Inter", sans-serif;
+  background: #f8fafc;
 }

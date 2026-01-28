@@ -1,0 +1,64 @@
+.about-container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 60px 20px;
+}
+
+.about-hero {
+  text-align: center;
+  padding: 90px 20px;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: white;
+  border-radius: 14px;
+  margin-bottom: 60px;
+}
+
+.about-hero h1 {
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.about-hero p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.about-section {
+  margin-bottom: 60px;
+}
+
+.about-section h2 {
+  font-size: 28px;
+  margin-bottom: 15px;
+  color: #111;
+}
+
+.about-section p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.about-section ul {
+  padding-left: 20px;
+}
+
+.about-section li {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.about-highlight {
+  background: #f8fafc;
+  padding: 40px;
+  border-radius: 14px;
+}
+
+.about-footer-line {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  margin-top: 80px;
+  color: #1e40af;
+}

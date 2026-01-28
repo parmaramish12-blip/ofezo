@@ -1,33 +1,42 @@
-import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState } from "react";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase/firebase";
-import { useNavigate, Link } from "react-router-dom";
-import "../styles/auth.css";
+import { useNavigate } from "react-router-dom";
+import "../styles/Login.css";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleEmailLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/dashboard");
     } catch (err) {
-      alert("Invalid login details");
+      alert(err.message);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      navigate("/dashboard");
+    } catch (err) {
+      alert(err.message);
     }
   };
 
   return (
-    <div className="auth-wrapper">
-      <form className="auth-box" onSubmit={handleLogin}>
-        <h2>Seller Login</h2>
+    <div className="login-page">
+      <div className="login-card">
+
+        <h2>Continue to <span>OFEZO</span></h2>
 
         <input
           type="email"
           placeholder="Email"
-          required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -35,17 +44,27 @@ export default function Login() {
         <input
           type="password"
           placeholder="Password"
-          required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button type="submit">Login</button>
+        <button className="primary-btn" onClick={handleEmailLogin}>
+          Continue
+        </button>
 
-        <p>
-          New seller? <Link to="/register">Create account</Link>
-        </p>
-      </form>
+        <div className="divider">
+          <span>OR</span>
+        </div>
+
+        <button className="google-btn" onClick={handleGoogleLogin}>
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt="google"
+          />
+          Continue with Google
+        </button>
+
+      </div>
     </div>
   );
 }

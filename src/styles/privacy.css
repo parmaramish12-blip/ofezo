@@ -1,0 +1,50 @@
+.privacy-container {
+  padding: 40px 20px;
+}
+
+.privacy-hero {
+  text-align: center;
+  padding: 70px 20px;
+  background: #f8fafc;
+  border-radius: 14px;
+  margin-bottom: 50px;
+}
+
+.privacy-hero h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.privacy-hero p {
+  font-size: 16px;
+  color: #555;
+}
+
+.privacy-content {
+  max-width: 1000px;
+  margin: auto;
+}
+
+.privacy-content section {
+  margin-bottom: 40px;
+}
+
+.privacy-content h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.privacy-content p {
+  font-size: 16px;
+  color: #444;
+  line-height: 1.7;
+}
+
+.privacy-content ul {
+  padding-left: 20px;
+}
+
+.privacy-content li {
+  margin-bottom: 8px;
+  font-size: 15px;
+}

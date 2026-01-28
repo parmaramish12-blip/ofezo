@@ -1,12 +1,11 @@
+import { Link } from "react-router-dom";
 import "../styles/Footer.css";
 
 export default function Footer() {
   return (
     <footer className="footer">
-
       <div className="footer-grid">
 
-        {/* ABOUT */}
         <div>
           <h3>OFEZO</h3>
           <p>
@@ -15,28 +14,25 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* LINKS */}
         <div>
           <h4>Company</h4>
           <ul>
-            <li>About Us</li>
-            <li>Contact Us</li>
-            <li>Careers</li>
-            <li>Support</li>
+            <li><Link to="/about">About Us</Link></li>
+            <li><Link to="/contact">Contact Us</Link></li>
+            <li><Link to="/careers">Careers</Link></li>
+            <li><Link to="/support">Support</Link></li>
           </ul>
         </div>
 
-        {/* LEGAL */}
         <div>
           <h4>Legal</h4>
           <ul>
-            <li>Privacy Policy</li>
-            <li>Terms & Conditions</li>
-            <li>Refund Policy</li>
+            <li><Link to="/privacy">Privacy Policy</Link></li>
+            <li><Link to="/terms">Terms & Conditions</Link></li>
+            <li><Link to="/refund">Refund Policy</Link></li>
           </ul>
         </div>
 
-        {/* SOCIAL */}
         <div>
           <h4>Follow Us</h4>
           <div className="social">
@@ -52,7 +48,6 @@ export default function Footer() {
       <div className="footer-bottom">
         © {new Date().getFullYear()} OFEZO. All rights reserved.
       </div>
-
     </footer>
   );
 }
