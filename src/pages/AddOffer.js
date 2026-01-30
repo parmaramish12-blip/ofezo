@@ -1,77 +1,80 @@
 import { useState } from "react";
-import {
-  addDoc,
-  collection,
-  serverTimestamp,
-} from "firebase/firestore";
-import { auth, db } from "../firebase/firebase";
-import { useNavigate } from "react-router-dom";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db, auth } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
-import "../styles/addOffer.css";
 
 export default function AddOffer() {
-  const navigate = useNavigate();
   const { userData } = useAuth();
 
   const [form, setForm] = useState({
     title: "",
-    image: "",
-    price: "",
-    city: "",
-    category: "",
     description: "",
-    phone: "",
     expiryDate: "",
   });
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  const saveDraft = async () => {
+  const saveOffer = async () => {
     if (!form.title || !form.expiryDate) {
-      alert("Title & expiry date required");
+      alert("Title and expiry required");
       return;
     }
 
     await addDoc(collection(db, "offers"), {
       ...form,
+
       sellerId: auth.currentUser.uid,
       businessName:
         userData?.businessProfile?.businessName || "",
-      isPublished: false, // ✅ DRAFT
-      isActive: false,
+
+      // 🔐 CORE LOGIC
+      isPublished: false,          // seller publish
+      subscriptionActive: false,   // paid?
+      adminApproved: false,        // ⭐ admin override
+      isActive: true,
+      adminDisabled: false,
+
       createdAt: serverTimestamp(),
     });
 
     alert("Offer saved as draft");
-    navigate("/dashboard?tab=offers");
   };
 
   return (
-    <div className="offer-form">
-      <h2>Create Offer</h2>
+    <div style={{ padding: 30 }}>
+      <h2>Add Offer</h2>
 
-      <input name="title" placeholder="Title" onChange={handleChange} />
-      <input name="image" placeholder="Image URL" onChange={handleChange} />
-      <input name="price" placeholder="Price" onChange={handleChange} />
-      <input name="phone" placeholder="Phone" onChange={handleChange} />
-      <input name="city" placeholder="City" onChange={handleChange} />
-      <input name="category" placeholder="Category" onChange={handleChange} />
+      <input
+        name="title"
+        placeholder="Offer title"
+        value={form.title}
+        onChange={handleChange}
+      />
+
+      <br /><br />
 
       <textarea
         name="description"
         placeholder="Description"
+        value={form.description}
         onChange={handleChange}
       />
+
+      <br /><br />
 
       <input
         type="date"
         name="expiryDate"
+        value={form.expiryDate}
         onChange={handleChange}
       />
 
-      <button onClick={saveDraft}>
-        Save Offer (Draft)
+      <br /><br />
+
+      <button onClick={saveOffer}>
+        Save Draft
       </button>
     </div>
   );

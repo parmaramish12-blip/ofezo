@@ -1,141 +1,67 @@
-import React, { useEffect, useState } from "react";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import SearchBar from "../components/SearchBar";
-import "../pages/Home.css";
 
-const Home = () => {
-  const navigate = useNavigate();
-
+export default function Home() {
   const [offers, setOffers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const [city, setCity] = useState("");
-  const [category, setCategory] = useState("");
-
-  // 🔒 FINAL SAFE FILTER
-  // Only PUBLISHED + ACTIVE + NOT EXPIRED
-  const filterOffers = (list) => {
-    const today = new Date().toISOString().split("T")[0];
-
-    return list.filter(
-      (o) =>
-        o.isPublished === true &&
-        o.isActive === true &&
-        o.expiryDate &&
-        o.expiryDate >= today
-    );
-  };
-
-  const fetchOffers = async (
-    selectedCity = "",
-    selectedCategory = ""
-  ) => {
-    try {
-      setLoading(true);
-
-      let ref = collection(db, "offers");
-      const conditions = [];
-
-      if (selectedCity) {
-        conditions.push(where("city", "==", selectedCity));
-      }
-
-      if (selectedCategory) {
-        conditions.push(
-          where("category", "==", selectedCategory)
-        );
-      }
-
-      const q =
-        conditions.length > 0
-          ? query(ref, ...conditions)
-          : ref;
-
-      const snapshot = await getDocs(q);
-
-      const rawData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      // ✅ APPLY FINAL VISIBILITY RULE
-      const safeData = filterOffers(rawData);
-
-      setOffers(safeData);
-    } catch (error) {
-      console.error("Error loading offers", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchOffers();
+    const load = async () => {
+      const snap = await getDocs(collection(db, "offers"));
+
+      const list = snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }));
+
+      setOffers(list);
+    };
+
+    load();
   }, []);
 
+  const today = new Date().toISOString().split("T")[0];
+
+  const visibleOffers = offers.filter((o) => {
+    const sellerAllowed =
+      o.isPublished === true &&
+      o.subscriptionActive === true;
+
+    const adminAllowed =
+      o.adminApproved === true;
+
+    return (
+      (sellerAllowed || adminAllowed) &&
+      o.isActive === true &&
+      o.adminDisabled === false &&
+      o.expiryDate &&
+      o.expiryDate >= today
+    );
+  });
+
   return (
-    <div className="home-container">
+    <div style={{ padding: 40 }}>
+      <h2>Latest Offers</h2>
 
-      {/* 🔍 SEARCH BAR */}
-      <SearchBar
-        city={city}
-        setCity={setCity}
-        category={category}
-        setCategory={setCategory}
-        onSearch={() => fetchOffers(city, category)}
-      />
-
-      <h2 className="home-title">Latest Offers</h2>
-
-      {loading && <p>Loading offers...</p>}
-
-      {!loading && offers.length === 0 && (
+      {visibleOffers.length === 0 && (
         <p>No active offers found</p>
       )}
 
-      <div className="offers-grid">
-        {offers.map((offer) => (
-          <div
-            key={offer.id}
-            className="offer-card"
-            onClick={() =>
-              navigate(`/offer/${offer.id}`)
-            }
-            style={{ cursor: "pointer" }}
-          >
-            <img
-              src={offer.image}
-              alt={offer.title}
-              className="offer-img"
-            />
-
-            <div className="offer-body">
-              <h3>{offer.title}</h3>
-
-              <p className="offer-desc">
-                {offer.description}
-              </p>
-
-              <p>
-                <strong>City:</strong> {offer.city}
-              </p>
-
-              <p>
-                <strong>Price:</strong> ₹{offer.price}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
+      {visibleOffers.map((o) => (
+        <div
+          key={o.id}
+          style={{
+            border: "1px solid #ddd",
+            padding: 15,
+            marginBottom: 10,
+            borderRadius: 8,
+          }}
+        >
+          <h4>{o.title}</h4>
+          <p>{o.description}</p>
+          <p>Valid till: {o.expiryDate}</p>
+        </div>
+      ))}
     </div>
   );
-};
-
-export default Home;
+}

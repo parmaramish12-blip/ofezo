@@ -1,18 +1,25 @@
 import React, { useState } from "react";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup
+} from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
 export default function Login() {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleEmailLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/dashboard");
+
+      // ✅ VERY IMPORTANT
+      navigate("/"); 
     } catch (err) {
       alert(err.message);
     }
@@ -22,7 +29,9 @@ export default function Login() {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      navigate("/dashboard");
+
+      // ✅ VERY IMPORTANT
+      navigate("/");
     } catch (err) {
       alert(err.message);
     }
@@ -31,8 +40,9 @@ export default function Login() {
   return (
     <div className="login-page">
       <div className="login-card">
-
-        <h2>Continue to <span>OFEZO</span></h2>
+        <h2>
+          Continue to <span>OFEZO</span>
+        </h2>
 
         <input
           type="email"
@@ -63,7 +73,6 @@ export default function Login() {
           />
           Continue with Google
         </button>
-
       </div>
     </div>
   );
