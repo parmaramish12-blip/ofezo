@@ -1,104 +1,115 @@
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 18px 40px;
-  border-bottom: 1px solid #e5e7eb;
+.dashboard-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px;
+  min-height: 60vh;
 }
 
-.logo {
+/* ===== CARD ===== */
+.dashboard-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 30px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== HEADERS ===== */
+.dashboard-card h2 {
+  margin-bottom: 6px;
   font-size: 22px;
-  font-weight: bold;
-  color: #2563eb;
+  font-weight: 600;
 }
 
-.nav-right {
-  display: flex;
-  gap: 25px;
-  align-items: center;
+.dashboard-subtitle {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 25px;
 }
 
-.login-btn {
-  background: #2563eb;
-  color: white;
-  padding: 8px 18px;
-  border-radius: 6px;
-}
-
-.user-menu {
-  position: relative;
-  cursor: pointer;
-}
-
-.dropdown {
-  position: absolute;
-  right: 0;
-  top: 35px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  width: 160px;
-  display: flex;
-  flex-direction: column;
-}
-
-.dropdown a,
-.dropdown button {
-  padding: 10px;
-  border: none;
-  background: none;
-  text-align: left;
-  cursor: pointer;
-}
-
-.dropdown a:hover,
-.dropdown button:hover {
-  background: #f3f4f6;
-}
-.offers-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.offers-grid {
+/* ===== FORM ===== */
+.form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  gap: 18px;
 }
 
-.offer-card {
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
-}
-
-.offer-card img {
+.form-grid input,
+.form-grid select {
   width: 100%;
-  height: 160px;
-  object-fit: cover;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
 }
 
-.offer-body {
-  padding: 15px;
+.form-grid input:focus,
+.form-grid select:focus {
+  outline: none;
+  border-color: #2563eb;
 }
 
-.offer-body h4 {
-  margin: 0 0 6px;
+/* ===== BUTTON ===== */
+.primary-btn {
+  margin-top: 25px;
+  background: #2563eb;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 10px;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
 }
 
-.price {
-  font-weight: 600;
-  margin-top: 5px;
+.primary-btn:hover {
+  background: #1d4ed8;
 }
 
+/* ===== BLOCKED MESSAGE ===== */
+.blocked-box {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  padding: 25px;
+  border-radius: 12px;
+  color: #9a3412;
+  text-align: center;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+  .dashboard-card {
+    padding: 20px;
+  }
+}
+.blocked-box {
+  background: #fff;
+  padding: 40px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.delete-btn {
+  margin-top: 8px;
+  width: 100%;
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
 .badge {
   display: inline-block;
-  margin-top: 8px;
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.badge.draft {
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .badge.active {
@@ -106,81 +117,215 @@
   color: #166534;
 }
 
+.badge.disabled {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
 .badge.expired {
   background: #fee2e2;
   color: #991b1b;
 }
-
-.edit-btn {
-  margin-top: 10px;
-  width: 100%;
-  border: none;
-  background: #2563eb;
-  color: #fff;
-  padding: 8px;
-  border-radius: 8px;
-  cursor: pointer;
+.profile-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
 }
-.offers-header {
+
+.profile-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.profile-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
 }
 
-.offers-grid {
+.profile-header h2 {
+  margin: 0;
+}
+
+.profile-header p {
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
 }
 
-.offer-card {
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+.form-grid input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 15px;
 }
 
-.offer-card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.offer-body {
-  padding: 15px;
-}
-
-.status {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  margin-top: 8px;
-}
-
-.status.active {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.status.expired {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.status.disabled {
-  background: #e5e7eb;
+.form-grid input:disabled {
+  background: #f9fafb;
   color: #374151;
 }
 
-.toggle-btn {
-  margin-top: 10px;
-  width: 100%;
-  padding: 8px;
+.action-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.edit-btn {
+  background: #f3f4f6;
   border: none;
+  padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.secondary-btn {
+  background: #e5e7eb;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.dashboard-container {
+  padding: 40px 20px;
+}
+
+/* =====================
+   COMMON CARD
+===================== */
+
+.profile-card,
+.business-card {
+  max-width: 900px;
+  margin: 0 auto 60px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.06);
+}
+
+/* =====================
+   HEADER
+===================== */
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.card-header h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.card-sub {
+  color: #6b7280;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+/* =====================
+   FORM LAYOUT
+===================== */
+
+.form-layout {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.form-layout input,
+.form-layout textarea,
+.form-layout select {
+  width: 100%;
+  padding: 4px 4px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  font-size: 15px;
+  height: 42px;
+  background: #fafafa;
+}
+
+.form-layout textarea {
+  grid-column: span 2;
+  resize: none;
+  min-height: 100px;
+}
+
+/* =====================
+   BUTTONS
+===================== */
+
+.btn-row {
+  margin-top: 35px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.btn-primary {
   background: #2563eb;
   color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 14px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  border: none;
+  padding: 12px 26px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background: #eef2ff;
+  color: #2563eb;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* =====================
+   BADGE
+===================== */
+
+.required-badge {
+  background: #fff7ed;
+  color: #c2410c;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+/* =====================
+   MOBILE
+===================== */
+
+@media (max-width: 768px) {
+  .form-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .form-layout textarea {
+    grid-column: span 1;
+  }
 }
 

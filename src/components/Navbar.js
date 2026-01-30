@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import "../styles/Navbar.css";
 
 export default function Navbar() {
-  const { currentUser } = useAuth(); // ✅ FIX HERE
+  const { currentUser, currentUserData } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -16,32 +16,27 @@ export default function Navbar() {
     navigate("/");
   };
 
-  const handleNavClick = (path) => {
+  const go = (path) => {
     setOpen(false);
     navigate(path);
   };
+
+  const hasBusiness =
+    currentUserData?.businessProfile?.businessName;
 
   return (
     <nav className="navbar">
       <div className="nav-wrapper">
 
-        {/* LEFT */}
         <div className="nav-left">
-          <Link to="/" className="logo">
-            OFEZO
-          </Link>
+          <Link to="/" className="logo">OFEZO</Link>
         </div>
 
-        {/* RIGHT */}
         <div className="nav-right">
-          <Link to="/" className="nav-link">
-            Home
-          </Link>
+          <Link to="/" className="nav-link">Home</Link>
 
           {!currentUser && (
-            <Link to="/login" className="login-btn">
-              Login
-            </Link>
+            <Link to="/login" className="login-btn">Login</Link>
           )}
 
           {currentUser && (
@@ -56,22 +51,28 @@ export default function Navbar() {
 
               {open && (
                 <div className="dropdown">
-                  <button onClick={() => handleNavClick("/dashboard?tab=profile")}>
+
+                  <button onClick={() => go("/dashboard?tab=profile")}>
                     My Profile
                   </button>
 
-                  <button onClick={() => handleNavClick("/dashboard?tab=offers")}>
+                 
+                  <button onClick={() => go("/dashboard?tab=offers")}>
                     My Offers
                   </button>
 
+                  <button onClick={() => go("/dashboard?tab=saved")}>
+                    Saved Offer
+                  </button>
 
-                  <button onClick={() => handleNavClick("/dashboard?tab=saved")}>
-                    Saved Ads
+                  <button onClick={() => go("/dashboard?tab=subscription")}>
+                    Subscription
                   </button>
 
                   <button onClick={logout} className="logout-btn">
                     Logout
                   </button>
+
                 </div>
               )}
             </div>

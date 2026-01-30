@@ -4,144 +4,78 @@ import {
   doc,
   getDoc,
   updateDoc,
-  Timestamp
+  serverTimestamp,
 } from "firebase/firestore";
-import { db } from "../firebase/firebase";
-import "../styles/ui.css";
+import { auth, db } from "../firebase/firebase";
+import { useAuth } from "../context/AuthContext";
+import { isSubscriptionActive } from "../utils/subscription";
+import "../styles/addOffer.css";
 
-function EditOffer() {
+export default function EditOffer() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { currentUserData } = useAuth();
+
+  const hasSubscription = isSubscriptionActive(
+    currentUserData?.subscription
+  );
 
   const [loading, setLoading] = useState(true);
-
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [city, setCity] = useState("");
-  const [category, setCategory] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
+  const [form, setForm] = useState({});
 
   useEffect(() => {
-    const loadOffer = async () => {
-      const ref = doc(db, "offers", id);
-      const snap = await getDoc(ref);
+    if (!hasSubscription) {
+      navigate("/dashboard?tab=subscription");
+      return;
+    }
+
+    const load = async () => {
+      const snap = await getDoc(doc(db, "offers", id));
 
       if (!snap.exists()) {
-        alert("Offer not found");
         navigate("/dashboard");
         return;
       }
 
       const data = snap.data();
 
-      setTitle(data.title || "");
-      setDescription(data.description || "");
-      setPrice(data.price || "");
-      setCity(data.city || "");
-      setCategory(data.category || "");
-
-      if (data.expiryDate) {
-        const date = data.expiryDate.toDate();
-        setExpiryDate(date.toISOString().split("T")[0]);
+      if (data.sellerId !== auth.currentUser.uid) {
+        navigate("/dashboard");
+        return;
       }
 
+      setForm(data);
       setLoading(false);
     };
 
-    loadOffer();
-  }, [id, navigate]);
+    load();
+  }, [id, hasSubscription, navigate]);
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
+  const updateOffer = async () => {
+    await updateDoc(doc(db, "offers", id), {
+      ...form,
+      updatedAt: serverTimestamp(),
+    });
 
-    if (!title || !description || !price || !city || !category) {
-      alert("Please fill all fields");
-      return;
-    }
-
-    try {
-      const ref = doc(db, "offers", id);
-
-      await updateDoc(ref, {
-        title,
-        description,
-        price,
-        city,
-        category,
-        expiryDate: expiryDate
-          ? Timestamp.fromDate(new Date(expiryDate))
-          : null
-      });
-
-      alert("Offer updated successfully ✅");
-      navigate("/dashboard");
-    } catch (error) {
-      console.error(error);
-      alert("Update failed ❌");
-    }
+    alert("Offer updated");
+    navigate("/dashboard?tab=offers");
   };
 
-  if (loading) {
-    return <div className="container">Loading...</div>;
-  }
+  if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="container">
+    <div className="offer-form">
       <h2>Edit Offer</h2>
 
-      <form className="card" onSubmit={handleUpdate}>
-        <input
-          type="text"
-          placeholder="Offer title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+      <input name="title" value={form.title} onChange={(e)=>setForm({...form,title:e.target.value})}/>
+      <input name="image" value={form.image} onChange={(e)=>setForm({...form,image:e.target.value})}/>
+      <input name="price" value={form.price} onChange={(e)=>setForm({...form,price:e.target.value})}/>
+      <input name="city" value={form.city} onChange={(e)=>setForm({...form,city:e.target.value})}/>
+      <input name="category" value={form.category} onChange={(e)=>setForm({...form,category:e.target.value})}/>
+      <textarea name="description" value={form.description} onChange={(e)=>setForm({...form,description:e.target.value})}/>
+      <input type="date" name="expiryDate" value={form.expiryDate} onChange={(e)=>setForm({...form,expiryDate:e.target.value})}/>
 
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-
-        <input
-          type="number"
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
-
-        <select value={city} onChange={(e) => setCity(e.target.value)}>
-          <option value="">Select City</option>
-          <option>Vadodara</option>
-          <option>Ahmedabad</option>
-          <option>Surat</option>
-          <option>Anand</option>
-        </select>
-
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option value="">Select Category</option>
-          <option>Electronics</option>
-          <option>Food</option>
-          <option>Furniture</option>
-          <option>Clothing</option>
-          <option>Gym</option>
-          <option>Salon</option>
-        </select>
-
-        <label>Expiry Date</label>
-        <input
-          type="date"
-          value={expiryDate}
-          onChange={(e) => setExpiryDate(e.target.value)}
-        />
-
-        <button className="btn btn-primary" style={{ marginTop: 15 }}>
-          Update Offer
-        </button>
-      </form>
+      <button onClick={updateOffer}>Update Offer</button>
     </div>
   );
 }
-
-export default EditOffer;

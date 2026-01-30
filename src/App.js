@@ -14,6 +14,11 @@ import Refund from "./pages/Refund";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import AddOffer from "./pages/AddOffer";
+import EditOffer from "./pages/EditOffer";
+import SavedOffers from "./pages/SavedOffers";
+import OfferDetails from "./pages/OfferDetails";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminRoute from "./components/AdminRoute";
 
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -36,7 +41,7 @@ function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/login" element={<Login />} />
-
+          
           <Route
             path="/dashboard"
             element={
@@ -51,8 +56,33 @@ function App() {
              <ProtectedRoute>
                <AddOffer />
                </ProtectedRoute>
-  }
-/>
+            }
+          />
+       <Route
+          path="/edit-offer/:id"
+          element={
+          <ProtectedRoute>
+          <EditOffer />
+          </ProtectedRoute>
+           }
+          />
+          <Route
+            path="/saved-offers"
+            element={
+              <ProtectedRoute>
+             <SavedOffers />
+            </ProtectedRoute>
+             }
+            />
+         <Route path="/offer/:id" element={<OfferDetails />} />
+            <Route
+             path="/admin"
+           element={
+           <AdminRoute>
+                 <AdminDashboard />
+              </AdminRoute>
+                   }
+                />
 
         </Routes>
       </div>

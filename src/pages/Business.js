@@ -1,112 +1,152 @@
 import { useEffect, useState } from "react";
-import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
-
-const emptyBusiness = {
-  businessName: "",
-  businessType: "",
-  category: "",
-  city: "",
-  phone: "",
-  isCompleted: false,
-};
+import "../styles/dashboard.css";
 
 export default function Business() {
-  const { currentUser, currentUserData, setCurrentUserData } = useAuth();
+  const { currentUser, currentUserData } = useAuth();
 
-  const [form, setForm] = useState(emptyBusiness);
+  const [edit, setEdit] = useState(false);
 
-  // ✅ ALWAYS sync from context
+  const [form, setForm] = useState({
+    businessName: "",
+    category: "",
+    type: "",
+    phone: "",
+    city: "",
+    year: "",
+    gst: "",
+    address: "",
+  });
+
   useEffect(() => {
-    if (currentUserData?.business) {
-      setForm({
-        ...emptyBusiness,
-        ...currentUserData.business,
-      });
-    }
+    if (!currentUserData?.businessProfile) return;
+
+    setForm({
+      businessName: currentUserData.businessProfile.businessName || "",
+      category: currentUserData.businessProfile.category || "",
+      type: currentUserData.businessProfile.type || "",
+      phone: currentUserData.businessProfile.phone || "",
+      city: currentUserData.businessProfile.city || "",
+      year: currentUserData.businessProfile.year || "",
+      gst: currentUserData.businessProfile.gst || "",
+      address: currentUserData.businessProfile.address || "",
+    });
   }, [currentUserData]);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const save = async () => {
-    if (!form.businessName || !form.phone) {
-      alert("Business name & phone required");
-      return;
-    }
-
-    const finalData = {
-      ...form,
-      isCompleted: true,
-    };
-
+  const saveBusiness = async () => {
     await updateDoc(doc(db, "users", currentUser.uid), {
-      business: finalData,
-      updatedAt: serverTimestamp(),
+      businessProfile: form,
     });
 
-    // 🔥 THIS IS THE KEY FIX
-    setCurrentUserData((prev) => ({
-      ...prev,
-      business: finalData,
-    }));
-
-    alert("Business profile saved successfully");
+    setEdit(false);
   };
 
   return (
-    <div style={{ padding: 30 }}>
-      <h2>Business Profile</h2>
+    <div className="business-card">
+      <div className="card-header">
+        <div>
+          <h2>
+            Business Profile
+            <span className="required-badge">Required</span>
+          </h2>
+          <p className="card-sub">
+            Required to publish offers
+          </p>
+        </div>
 
-      <input
-        name="businessName"
-        placeholder="Business Name"
-        value={form.businessName}
-        onChange={handleChange}
-      />
+        {!edit && (
+          <button className="edit-btn" onClick={() => setEdit(true)}>
+            Edit
+          </button>
+        )}
+      </div>
 
-      <input
-        name="phone"
-        placeholder="Business Phone"
-        value={form.phone}
-        onChange={handleChange}
-      />
+      <div className="form-layout">
+        <input
+          disabled={!edit}
+          placeholder="Business Name"
+          value={form.businessName}
+          onChange={(e) =>
+            setForm({ ...form, businessName: e.target.value })
+          }
+        />
 
-      <input
-        name="city"
-        placeholder="City"
-        value={form.city}
-        onChange={handleChange}
-      />
+        <input
+          disabled={!edit}
+          placeholder="Category"
+          value={form.category}
+          onChange={(e) =>
+            setForm({ ...form, category: e.target.value })
+          }
+        />
 
-      <select
-        name="businessType"
-        value={form.businessType}
-        onChange={handleChange}
-      >
-        <option value="">Business Type</option>
-        <option>Shop</option>
-        <option>Service</option>
-        <option>Manufacturer</option>
-        <option>Wholesaler</option>
-      </select>
+        <input
+          disabled={!edit}
+          placeholder="Business Type (Shop / Service)"
+          value={form.type}
+          onChange={(e) =>
+            setForm({ ...form, type: e.target.value })
+          }
+        />
 
-      <select
-        name="category"
-        value={form.category}
-        onChange={handleChange}
-      >
-        <option value="">Category</option>
-        <option>Furniture</option>
-        <option>Electronics</option>
-        <option>Fashion</option>
-        <option>Food</option>
-        <option>Beauty</option>
-      </select>
+        <input
+          disabled={!edit}
+          placeholder="Business Phone"
+          value={form.phone}
+          onChange={(e) =>
+            setForm({ ...form, phone: e.target.value })
+          }
+        />
 
-      <button onClick={save}>Save Business</button>
+        <input
+          disabled={!edit}
+          placeholder="City"
+          value={form.city}
+          onChange={(e) =>
+            setForm({ ...form, city: e.target.value })
+          }
+        />
+
+        <input
+          disabled={!edit}
+          placeholder="Est. Year"
+          value={form.year}
+          onChange={(e) =>
+            setForm({ ...form, year: e.target.value })
+          }
+        />
+
+        <input
+          disabled={!edit}
+          placeholder="GST (optional)"
+          value={form.gst}
+          onChange={(e) =>
+            setForm({ ...form, gst: e.target.value })
+          }
+        />
+
+        <textarea
+          disabled={!edit}
+          placeholder="Business Address"
+          value={form.address}
+          onChange={(e) =>
+            setForm({ ...form, address: e.target.value })
+          }
+        />
+      </div>
+
+      {edit && (
+        <div className="btn-row">
+          <button className="btn-secondary" onClick={() => setEdit(false)}>
+            Cancel
+          </button>
+          <button className="btn-primary" onClick={saveBusiness}>
+            Save Business Profile
+          </button>
+        </div>
+      )}
     </div>
   );
 }

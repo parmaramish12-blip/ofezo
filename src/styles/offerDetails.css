@@ -1,0 +1,58 @@
+.offer-details-container {
+  max-width: 1000px;
+  margin: 40px auto;
+}
+
+.offer-main-img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 18px;
+}
+
+.offer-details-box {
+  background: #fff;
+  padding: 30px;
+  border-radius: 18px;
+  margin-top: 20px;
+}
+
+.price {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.offer-actions {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.whatsapp-btn {
+  background: #25d366;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+.save-btn {
+  background: #f3f4f6;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+.review-card {
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.review-form textarea {
+  width: 100%;
+  height: 80px;
+  margin-top: 10px;
+}
