@@ -1,31 +1,29 @@
-import { useAuth } from "../context/AuthContext";
+import { Navigate } from "react-router-dom";
+import { auth, db } from "../firebase/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
-export default function AdminRoute({ children }) {
-  const { currentUser, currentUserData } = useAuth();
+const AdminRoute = ({ children }) => {
+  const [user, loading] = useAuthState(auth);
+  const [isAdmin, setIsAdmin] = useState(null);
 
-  // auth not loaded yet
-  if (currentUser === undefined) {
-    return <p style={{ padding: 40 }}>Checking login...</p>;
-  }
+  useEffect(() => {
+    const checkRole = async () => {
+      if (!user) return;
 
-  // not logged in
-  if (!currentUser) {
-    return <p style={{ padding: 40 }}>Please login first</p>;
-  }
+      const snap = await getDoc(doc(db, "users", user.uid));
+      setIsAdmin(snap.exists() && snap.data().role === "admin");
+    };
 
-  // firestore not loaded
-  if (!currentUserData) {
-    return <p style={{ padding: 40 }}>Loading user data...</p>;
-  }
+    checkRole();
+  }, [user]);
 
-  // not admin
-  if (currentUserData.role !== "admin") {
-    return (
-      <p style={{ padding: 40, color: "red" }}>
-        You are not admin
-      </p>
-    );
-  }
+  if (loading || isAdmin === null) return null;
+
+  if (!user || !isAdmin) return <Navigate to="/" />;
 
   return children;
-}
+};
+
+export default AdminRoute;

@@ -4,7 +4,7 @@ const AdminLayout = () => {
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
       
-      {/* Sidebar */}
+      {/* SIDEBAR */}
       <div
         style={{
           width: "220px",
@@ -24,13 +24,13 @@ const AdminLayout = () => {
 
           <p>
             <Link to="/admin/offers" style={{ color: "#fff" }}>
-              All Offers
+              Offers
             </Link>
           </p>
         </div>
       </div>
 
-      {/* Content */}
+      {/* CONTENT */}
       <div style={{ flex: 1, padding: "25px" }}>
         <Outlet />
       </div>

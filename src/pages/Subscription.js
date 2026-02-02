@@ -1,103 +1,103 @@
-import { httpsCallable } from "firebase/functions";
-import { functions } from "../firebase/firebase";
+import { useEffect, useState } from "react";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  orderBy,
+} from "firebase/firestore";
+import { db } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
 import "../styles/subscription.css";
 
 export default function Subscription() {
-  const { currentUserData } = useAuth();
+  const { currentUser, currentUserData } = useAuth();
+
+  const [history, setHistory] = useState([]);
 
   const subscription = currentUserData?.subscription;
 
   const isActive =
-    subscription?.isActive &&
-    subscription?.endDate >=
-      new Date().toISOString().split("T")[0];
+    subscription?.active === true &&
+    subscription?.endDate?.toDate() > new Date();
 
-  const buyPlan = async (plan, amount) => {
-    const createOrder = httpsCallable(functions, "createOrder");
+  useEffect(() => {
+    if (!currentUser) return;
 
-    const res = await createOrder({ amount });
+    const loadHistory = async () => {
+      const q = query(
+        collection(db, "payments"),
+        where("userId", "==", currentUser.uid),
+        orderBy("createdAt", "desc")
+      );
 
-    const options = {
-      key: "RAZORPAY_KEY_ID",
-      amount: res.data.amount,
-      currency: "INR",
-      name: "OFEZO",
-      description: plan + " Plan",
-      order_id: res.data.id,
-      handler: async () => {
-        const verify = httpsCallable(functions, "verifyPayment");
-        await verify({ plan });
+      const snap = await getDocs(q);
 
-        alert("Payment successful");
-        window.location.reload();
-      },
+      setHistory(
+        snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }))
+      );
     };
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-  };
+    loadHistory();
+  }, [currentUser]);
 
   return (
     <div className="subscription-page">
+      <h2 className="sub-title">My Subscription</h2>
 
-      <h2 className="sub-title">Choose Your Subscription</h2>
-      <p className="sub-subtitle">
-        Activate plan to publish and manage offers
-      </p>
-
-      {isActive && (
+      {/* ACTIVE STATUS */}
+      {isActive ? (
         <div className="active-box">
-          ✅ Your subscription is active till{" "}
-          <b>{subscription.endDate}</b>
+          ✅ Active till{" "}
+          <b>
+            {subscription.endDate
+              .toDate()
+              .toDateString()}
+          </b>
+        </div>
+      ) : (
+        <div className="inactive-box">
+          ❌ No active subscription
         </div>
       )}
 
-      <div className="plans-wrapper">
+      <hr />
 
-        {/* BASIC PLAN */}
-        <div className="plan-card">
-          <h3>Basic Plan</h3>
-          <p className="price">₹499 / month</p>
+      {/* HISTORY */}
+      <h3>Payment History</h3>
 
-          <ul>
-            <li>✔ Unlimited offers</li>
-            <li>✔ Edit / delete offers</li>
-            <li>✔ WhatsApp sharing</li>
-            <li>✔ Dashboard access</li>
-          </ul>
+      {history.length === 0 && (
+        <p>No payments found</p>
+      )}
 
-          <button
-            className="plan-btn"
-            onClick={() => buyPlan("BASIC", 499)}
+      {history.map((p) => (
+        <div key={p.id} className="payment-row">
+          <div>
+            <b>{p.plan}</b> Plan
+          </div>
+
+          <div>₹{p.amount}</div>
+
+          <div>
+            {p.createdAt
+              ?.toDate()
+              .toDateString()}
+          </div>
+
+          <div
+            className={
+              p.status === "success"
+                ? "paid"
+                : "failed"
+            }
           >
-            Buy Basic
-          </button>
+            {p.status}
+          </div>
         </div>
-
-        {/* PRO PLAN */}
-        <div className="plan-card popular">
-          <span className="badge">POPULAR</span>
-
-          <h3>Pro Plan</h3>
-          <p className="price">₹999 / month</p>
-
-          <ul>
-            <li>✔ Everything in Basic</li>
-            <li>✔ Featured offers</li>
-            <li>✔ Priority listing</li>
-            <li>✔ Analytics access</li>
-          </ul>
-
-          <button
-            className="plan-btn primary"
-            onClick={() => buyPlan("PRO", 999)}
-          >
-            Buy Pro
-          </button>
-        </div>
-
-      </div>
+      ))}
     </div>
   );
 }

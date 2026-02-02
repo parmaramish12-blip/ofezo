@@ -17,6 +17,28 @@
   margin-top: 20px;
 }
 
+.offer-tabs {
+  display: flex;
+  gap: 18px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.offer-tab-btn {
+  background: none;
+  border: none;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.offer-tab-btn.active {
+  color: #111827;
+  border-bottom: 2px solid #2563eb;
+}
+
 .price {
   font-size: 24px;
   font-weight: bold;
@@ -56,3 +78,14 @@
   height: 80px;
   margin-top: 10px;
 }
+
+.analytics-row {
+  font-size: 13px;
+  color: #666;
+  margin: 6px 0;
+}
+
+.manage-panel h2 {
+  margin: 0;
+}
+

@@ -1,66 +1,55 @@
-import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { doc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 
-const AdminOfferCard = ({ offer }) => {
+export default function AdminOfferCard({ offer }) {
 
-  const publishOffer = async () => {
+  const makeFeatured = async (days) => {
+    const till = new Date();
+    till.setDate(till.getDate() + days);
+
     await updateDoc(doc(db, "offers", offer.id), {
-      isActive: true,
-      status: "published",
-      publishedBy: "admin"
+      featured: true,
+      featuredTill: Timestamp.fromDate(till),
     });
+
+    alert(`Featured for ${days} days`);
   };
 
-  const unpublishOffer = async () => {
+  const removeFeatured = async () => {
     await updateDoc(doc(db, "offers", offer.id), {
-      isActive: false
+      featured: false,
+      featuredTill: null,
     });
-  };
-
-  const deleteOffer = async () => {
-    if (window.confirm("Delete this offer?")) {
-      await deleteDoc(doc(db, "offers", offer.id));
-    }
   };
 
   return (
-    <div
-      style={{
-        border: "1px solid #ccc",
-        padding: "15px",
-        marginBottom: "15px",
-        borderRadius: "8px"
-      }}
-    >
-      <h3>{offer.title}</h3>
-      <p>{offer.description}</p>
+    <div style={{
+      border: "1px solid #ccc",
+      padding: 15,
+      marginBottom: 15,
+      borderRadius: 8
+    }}>
+      <h4>{offer.title}</h4>
 
-      <p>
-        Status: {offer.isActive ? "🟢 Active" : "⚪ Draft"}
-      </p>
+      {offer.featured && (
+        <p>⭐ Featured</p>
+      )}
 
-      <div style={{ marginTop: "10px" }}>
-        {!offer.isActive && (
-          <button onClick={publishOffer}>
-            Publish
+      {!offer.featured ? (
+        <>
+          <button onClick={() => makeFeatured(7)}>
+            Feature 7 Days
           </button>
-        )}
 
-        {offer.isActive && (
-          <button onClick={unpublishOffer}>
-            Unpublish
+          <button onClick={() => makeFeatured(14)}>
+            Feature 14 Days
           </button>
-        )}
-
-        <button
-          onClick={deleteOffer}
-          style={{ marginLeft: "10px", color: "red" }}
-        >
-          Delete
+        </>
+      ) : (
+        <button onClick={removeFeatured}>
+          Remove Featured
         </button>
-      </div>
+      )}
     </div>
   );
-};
-
-export default AdminOfferCard;
+}

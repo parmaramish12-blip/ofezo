@@ -1,9 +1,12 @@
+// src/context/AuthContext.jsx
+
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import {
   doc,
   getDoc,
   setDoc,
+  updateDoc,
   serverTimestamp,
 } from "firebase/firestore";
 import { auth, db } from "../firebase/firebase";
@@ -15,58 +18,60 @@ export const AuthProvider = ({ children }) => {
   const [currentUserData, setCurrentUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const getAvatar = (name) =>
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      name || "User"
-    )}&background=2563eb&color=fff`;
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
       setLoading(true);
 
-      try {
-        if (!user) {
-          setCurrentUser(null);
-          setCurrentUserData(null);
-          setLoading(false);
-          return;
-        }
-
-        setCurrentUser(user);
-
-        const userRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userRef);
-
-        // 🔥 CREATE USER IF NOT EXISTS
-        if (!snap.exists()) {
-          const newUser = {
-            uid: user.uid,
-            name: user.displayName || "",
-            email: user.email || "",
-            photoURL:
-              user.photoURL || getAvatar(user.displayName),
-            phone: "",
-            city: "",
-            state: "",
-            businessProfile: null,
-            subscription: null,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          };
-
-          await setDoc(userRef, newUser);
-          setCurrentUserData(newUser);
-        } else {
-          setCurrentUserData(snap.data());
-        }
-      } catch (err) {
-        console.error("AuthContext error:", err);
-      } finally {
+      if (!user) {
+        setCurrentUser(null);
+        setCurrentUserData(null);
         setLoading(false);
+        return;
       }
+
+      setCurrentUser(user);
+
+      const ref = doc(db, "users", user.uid);
+      const snap = await getDoc(ref);
+
+      if (!snap.exists()) {
+        const newUser = {
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName || "",
+          subscription: {
+            active: false,
+            plan: null,
+            startDate: null,
+            endDate: null,
+          },
+          createdAt: serverTimestamp(),
+        };
+
+        await setDoc(ref, newUser);
+        setCurrentUserData(newUser);
+        setLoading(false);
+        return;
+      }
+
+      const data = snap.data();
+
+      // auto expiry
+      if (
+        data.subscription?.active &&
+        data.subscription?.endDate?.toDate() < new Date()
+      ) {
+        await updateDoc(ref, {
+          "subscription.active": false,
+        });
+        data.subscription.active = false;
+      }
+
+      setCurrentUserData(data);
+      setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => unsub();
   }, []);
 
   return (
@@ -74,10 +79,11 @@ export const AuthProvider = ({ children }) => {
       value={{
         currentUser,
         currentUserData,
+        loading,
         setCurrentUserData,
       }}
     >
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };

@@ -1,81 +1,158 @@
+// src/pages/AddOffer.jsx
+
 import { useState } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db, auth } from "../firebase/firebase";
+import { db } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
+import {
+  canCreateOffer,
+  getSubscriptionLabel,
+} from "../utils/subscriptionUtils";
+import "../styles/dashboard.css";
+
+const ADMIN_EMAIL = "parmaramish12@gmail.com";
 
 export default function AddOffer() {
-  const { userData } = useAuth();
+  const { currentUser, currentUserData, loading } = useAuth();
 
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    expiryDate: "",
-  });
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [city, setCity] = useState("");
+  const [category, setCategory] = useState("");
+  const [image, setImage] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const isAdminUser =
+    currentUser?.email === ADMIN_EMAIL;
 
-  const saveOffer = async () => {
-    if (!form.title || !form.expiryDate) {
-      alert("Title and expiry required");
+  if (loading) {
+    return <p style={{ padding: 30 }}>Loading...</p>;
+  }
+
+  if (!isAdminUser && !canCreateOffer(currentUserData)) {
+    return (
+      <div className="dashboard-container">
+        <div className="blocked-box">
+          <h2>Subscription required</h2>
+          <p style={{ marginTop: 8 }}>
+            Your current plan: {getSubscriptionLabel(currentUserData)}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const submit = async (e) => {
+    e.preventDefault();
+
+    if (!title || !description || !city || !category || !expiryDate) {
+      alert("All fields required");
       return;
     }
 
-    await addDoc(collection(db, "offers"), {
-      ...form,
+    try {
+      setSaving(true);
 
-      sellerId: auth.currentUser.uid,
-      businessName:
-        userData?.businessProfile?.businessName || "",
+      await addDoc(collection(db, "offers"), {
+        title,
+        description,
+        city,
+        category,
+        image,
+        expiryDate: new Date(expiryDate),
+        sellerId: currentUser.uid,
+        businessName: currentUserData?.name || "",
+        isPublished: false,
+        isActive: false,
+        createdAt: serverTimestamp(),
+      });
 
-      // 🔐 CORE LOGIC
-      isPublished: false,          // seller publish
-      subscriptionActive: false,   // paid?
-      adminApproved: false,        // ⭐ admin override
-      isActive: true,
-      adminDisabled: false,
+      alert("Offer added successfully");
 
-      createdAt: serverTimestamp(),
-    });
-
-    alert("Offer saved as draft");
+      setTitle("");
+      setDescription("");
+      setCity("");
+      setCategory("");
+      setImage("");
+      setExpiryDate("");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add offer");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <div style={{ padding: 30 }}>
-      <h2>Add Offer</h2>
+    <div className="dashboard-container">
+      <div className="business-card">
+        <div className="card-header">
+          <div>
+            <h2>Create a new offer</h2>
+            <p className="card-sub">
+              Highlight your best deal with a clear title, image and expiry.
+            </p>
+          </div>
+          <span className="required-badge">All fields required</span>
+        </div>
 
-      <input
-        name="title"
-        placeholder="Offer title"
-        value={form.title}
-        onChange={handleChange}
-      />
+        <form onSubmit={submit}>
+          <div className="form-layout">
+            <input
+              placeholder="Offer title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
 
-      <br /><br />
+            <input
+              placeholder="City"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+            />
 
-      <textarea
-        name="description"
-        placeholder="Description"
-        value={form.description}
-        onChange={handleChange}
-      />
+            <input
+              placeholder="Category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            />
 
-      <br /><br />
+            <input
+              placeholder="Image URL"
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
+            />
 
-      <input
-        type="date"
-        name="expiryDate"
-        value={form.expiryDate}
-        onChange={handleChange}
-      />
+            <textarea
+              placeholder="Short description of the offer"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
 
-      <br /><br />
+            <div>
+              <label style={{ fontSize: 13, color: "#6b7280" }}>
+                Expiry date
+              </label>
+              <input
+                type="date"
+                value={expiryDate}
+                onChange={(e) => setExpiryDate(e.target.value)}
+                style={{ marginTop: 6 }}
+              />
+            </div>
+          </div>
 
-      <button onClick={saveOffer}>
-        Save Draft
-      </button>
+          <div className="btn-row">
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={saving}
+            >
+              {saving ? "Saving…" : "Add offer"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

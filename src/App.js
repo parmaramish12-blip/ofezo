@@ -4,6 +4,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
+/* PUBLIC PAGES */
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -15,16 +16,21 @@ import Refund from "./pages/Refund";
 
 import Login from "./pages/Login";
 
+/* SELLER */
 import Dashboard from "./pages/Dashboard";
 import AddOffer from "./pages/AddOffer";
 import EditOffer from "./pages/EditOffer";
 import SavedOffers from "./pages/SavedOffers";
 import OfferDetails from "./pages/OfferDetails";
 
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminOffers from "./pages/AdminOffers";
+/* ADMIN */
+import AdminLayout from "./admin/AdminLayout";
+import AdminDashboard from "./admin/AdminDashboard";
+import AdminOffers from "./admin/AdminOffers";
+import AdminRoute from "./admin/AdminRoute";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminPayments from "./admin/AdminPayments";
 
 function App() {
   return (
@@ -36,7 +42,7 @@ function App() {
       <div className="page-content">
         <Routes>
 
-          {/* PUBLIC */}
+          {/* ================= PUBLIC ================= */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
@@ -48,7 +54,7 @@ function App() {
 
           <Route path="/login" element={<Login />} />
 
-          {/* SELLER */}
+          {/* ================= SELLER ================= */}
           <Route
             path="/dashboard"
             element={
@@ -87,11 +93,21 @@ function App() {
 
           <Route path="/offer/:id" element={<OfferDetails />} />
 
-          {/* 🔐 ADMIN (NESTED ROUTES) */}
-          <Route path="/admin" element={<AdminDashboard />}>
+          {/* ================= ADMIN ================= */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
             <Route path="offers" element={<AdminOffers />} />
-          </Route>
+          <Route path="payments" element={<AdminPayments />} />
 
+</Route>
+          
         </Routes>
       </div>
 
