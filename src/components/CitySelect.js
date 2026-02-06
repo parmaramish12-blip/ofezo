@@ -10,8 +10,8 @@ export default function CitySelect({ value, onChange }) {
   return (
     <Select
       options={options}
-      isSearchable
-      placeholder="Search city..."
+      isSearchable={true}
+      placeholder="Search or select city..."
       value={
         value
           ? {
@@ -24,41 +24,52 @@ export default function CitySelect({ value, onChange }) {
       styles={{
         control: (base) => ({
           ...base,
-          minWidth: 220,
-          padding: 6,
-          borderRadius: 10,
-          borderColor: "#2563eb",
-          backgroundColor: "#ffffff",
+          minWidth: 200,
+          padding: "8px 12px",
+          borderRadius: 0,
+          borderColor: "transparent",
+          backgroundColor: "transparent",
+          boxShadow: "none",
+          border: "none",
+          cursor: "pointer",
         }),
 
         singleValue: (base) => ({
           ...base,
-          color: "#111827", // 🔥 DARK TEXT
+          color: "#002f34",
           fontWeight: 500,
+          fontSize: "14px",
         }),
 
         input: (base) => ({
           ...base,
-          color: "#111827", // 🔥 typing color
+          color: "#002f34",
+          fontSize: "14px",
         }),
 
         placeholder: (base) => ({
           ...base,
-          color: "#6b7280", // grey
+          color: "#6c757d",
         }),
 
         option: (base, state) => ({
           ...base,
-          color: "#111827",
+          color: "#002f34",
           backgroundColor: state.isFocused
-            ? "#e0e7ff"
+            ? "#f0f9ff"
             : "#ffffff",
         }),
 
         menu: (base) => ({
           ...base,
           zIndex: 9999,
+          borderRadius: "4px",
+          border: "1px solid #e0e0e0",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
         }),
+
+        dropdownIndicator: () => null,
+        indicatorSeparator: () => null,
       }}
     />
   );

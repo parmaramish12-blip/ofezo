@@ -21,6 +21,7 @@ export default function AddOffer() {
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
+  const [status, setStatus] = useState("draft"); // 'published' or 'draft'
   const [saving, setSaving] = useState(false);
 
   const isAdminUser =
@@ -62,9 +63,13 @@ export default function AddOffer() {
         image,
         expiryDate: new Date(expiryDate),
         sellerId: currentUser.uid,
-        businessName: currentUserData?.name || "",
-        isPublished: false,
-        isActive: false,
+        businessName: currentUserData?.businessProfile?.businessName || currentUserData?.name || "",
+        businessAddress: currentUserData?.businessProfile?.address || "",
+        businessPhone: currentUserData?.businessProfile?.phone || currentUserData?.phone || "",
+        businessCategory: currentUserData?.businessProfile?.category || category,
+        status: status, // 'published' or 'draft'
+        isActive: status === 'published', // Only active if published
+        isPublished: status === 'published', // Only published if status is 'published'
         createdAt: serverTimestamp(),
       });
 
@@ -76,6 +81,7 @@ export default function AddOffer() {
       setCategory("");
       setImage("");
       setExpiryDate("");
+      setStatus("draft"); // Reset to default
     } catch (err) {
       console.error(err);
       alert("Failed to add offer");
@@ -139,6 +145,26 @@ export default function AddOffer() {
                 onChange={(e) => setExpiryDate(e.target.value)}
                 style={{ marginTop: 6 }}
               />
+            </div>
+
+            <div>
+              <label style={{ fontSize: 13, color: "#6b7280" }}>
+                Status
+              </label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                style={{
+                  marginTop: 6,
+                  width: "100%",
+                  padding: "8px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "6px"
+                }}
+              >
+                <option value="draft">Draft (Save as draft)</option>
+                <option value="published">Published (Make live)</option>
+              </select>
             </div>
           </div>
 

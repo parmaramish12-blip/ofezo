@@ -25,7 +25,7 @@ import OfferDetails from "./pages/OfferDetails";
 
 /* ADMIN */
 import AdminLayout from "./admin/AdminLayout";
-import AdminDashboard from "./admin/AdminDashboard";
+import AdminPanel from "./admin/AdminPanel";
 import AdminOffers from "./admin/AdminOffers";
 import AdminRoute from "./admin/AdminRoute";
 
@@ -102,11 +102,10 @@ function App() {
               </AdminRoute>
             }
           >
-            <Route index element={<AdminDashboard />} />
+            <Route index element={<AdminPanel />} />
             <Route path="offers" element={<AdminOffers />} />
-          <Route path="payments" element={<AdminPayments />} />
-
-</Route>
+            <Route path="payments" element={<AdminPayments />} />
+          </Route>
           
         </Routes>
       </div>

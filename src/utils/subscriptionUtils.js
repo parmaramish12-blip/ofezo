@@ -44,7 +44,9 @@ export const hasActiveSubscription = (userDoc) => {
  * @returns {boolean}
  */
 export const canCreateOffer = (userDoc) => {
-  return hasActiveSubscription(userDoc);
+  // TEMPORARILY DISABLED: Allow all users to create offers
+  return true;
+  // return hasActiveSubscription(userDoc);
 };
 
 /**
@@ -53,7 +55,9 @@ export const canCreateOffer = (userDoc) => {
  * @returns {boolean}
  */
 export const canPublishOffer = (userDoc) => {
-  return hasActiveSubscription(userDoc);
+  // TEMPORARILY DISABLED: Allow all users to publish offers
+  return true;
+  // return hasActiveSubscription(userDoc);
 };
 
 /**

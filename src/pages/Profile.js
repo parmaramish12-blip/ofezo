@@ -9,12 +9,14 @@ export default function Profile() {
   const { currentUser, currentUserData } = useAuth();
 
   const [edit, setEdit] = useState(false);
+  const [editInterests, setEditInterests] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
     phone: "",
     city: "",
     state: "",
+    interests: "", // Add interests field
   });
 
   useEffect(() => {
@@ -25,6 +27,7 @@ export default function Profile() {
       phone: currentUserData.phone || "",
       city: currentUserData.city || "",
       state: currentUserData.state || "",
+      interests: currentUserData.interests || "", // Load interests
     });
   }, [currentUserData]);
 
@@ -33,16 +36,30 @@ export default function Profile() {
     setEdit(false);
   };
 
+  const saveInterests = async () => {
+    await updateDoc(doc(db, "users", currentUser.uid), {
+      interests: form.interests
+    });
+    setEditInterests(false);
+  };
+
+  // Check if user is a seller (has business profile or has created offers)
+  const isSeller = currentUserData?.businessProfile || 
+                   currentUserData?.role === 'seller' ||
+                   currentUserData?.role === 'admin';
+
   if (!currentUserData) return null;
 
   return (
     <>
-      {/* PERSONAL PROFILE */}
+      {/* PERSONAL PROFILE - FOR ALL USERS */}
       <div className="profile-card">
         <div className="card-header">
           <div>
             <h2>My Profile</h2>
-            <p className="card-sub">Personal details</p>
+            <p className="card-sub">
+              {isSeller ? "Seller Personal Details" : "Personal Details"}
+            </p>
           </div>
 
           {!edit && (
@@ -78,8 +95,48 @@ export default function Profile() {
         )}
       </div>
 
-      {/* BUSINESS PROFILE */}
-      <Business />
+      {/* INTERESTS SECTION - ONLY FOR REGULAR USERS */}
+      {!isSeller && (
+        <div className="profile-card">
+          <div className="card-header">
+            <div>
+              <h2>My Interests</h2>
+              <p className="card-sub">Tell us what you're interested in</p>
+            </div>
+
+            {!editInterests && (
+              <button className="edit-btn" onClick={() => setEditInterests(true)}>
+                Edit
+              </button>
+            )}
+          </div>
+
+          <div className="form-layout">
+            <textarea
+              disabled={!editInterests}
+              placeholder="Your interests (e.g., Food, Shopping, Electronics, Travel...)"
+              value={form.interests}
+              onChange={(e) => setForm({ ...form, interests: e.target.value })}
+              rows={4}
+              style={{ resize: 'vertical' }}
+            />
+          </div>
+
+          {editInterests && (
+            <div className="btn-row">
+              <button className="btn-secondary" onClick={() => setEditInterests(false)}>
+                Cancel
+              </button>
+              <button className="btn-primary" onClick={saveInterests}>
+                Save Interests
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* BUSINESS PROFILE - ONLY FOR SELLERS */}
+      {isSeller && <Business />}
     </>
   );
 }

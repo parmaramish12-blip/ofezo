@@ -53,7 +53,12 @@ export default function Navbar() {
           className="nav-left logo"
           onClick={() => navigate("/", { replace: true })}
         >
-          OFEZO
+          <img 
+            src="/logo.svg" 
+            alt="OFEZO" 
+            className="logo-img"
+          />
+          <span className="brand-name">OFEZO</span>
         </div>
 
         <div className="nav-right">

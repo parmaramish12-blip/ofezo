@@ -35,7 +35,7 @@ export default function OfferDetails() {
     loadOffer();
     loadReviews();
     checkSaved();
-  }, []);
+  }, [id, currentUser, loadOffer, loadReviews, checkSaved]);
 
   // 👀 VIEW COUNT
   const loadOffer = async () => {
@@ -175,8 +175,9 @@ export default function OfferDetails() {
   const hasSubscription =
     currentUserData?.subscription?.active === true;
 
+  // TEMPORARILY DISABLED: Allow all users to publish offers
   const canPublish =
-    isAdminUser || hasSubscription;
+    isAdminUser || isOwner; // || hasSubscription;
 
   const handlePublish = async () => {
     if (!canPublish) {
@@ -271,6 +272,42 @@ export default function OfferDetails() {
               <p className="price">₹ {offer.price}</p>
             )}
             <p>City: {offer.city}</p>
+
+            {/* Business Profile Information */}
+            {(offer.businessName || offer.businessAddress || offer.businessPhone) && (
+              <div style={{
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: 8,
+                padding: 16,
+                marginTop: 16,
+                marginBottom: 16
+              }}>
+                <h3 style={{ margin: '0 0 12px 0', color: '#1f2937', fontSize: 16 }}>
+                  🏪 Business Information
+                </h3>
+                {offer.businessName && (
+                  <p style={{ margin: '4px 0', fontWeight: 'bold' }}>
+                    {offer.businessName}
+                  </p>
+                )}
+                {offer.businessAddress && (
+                  <p style={{ margin: '4px 0', color: '#6b7280' }}>
+                    📍 {offer.businessAddress}
+                  </p>
+                )}
+                {offer.businessPhone && (
+                  <p style={{ margin: '4px 0', color: '#6b7280' }}>
+                    📞 {offer.businessPhone}
+                  </p>
+                )}
+                {offer.businessCategory && (
+                  <p style={{ margin: '4px 0', color: '#6b7280' }}>
+                    🏷️ Category: {offer.businessCategory}
+                  </p>
+                )}
+              </div>
+            )}
 
             <p className="desc">{offer.description}</p>
 

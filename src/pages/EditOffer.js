@@ -20,14 +20,18 @@ export default function EditOffer() {
     currentUserData?.subscription
   );
 
+  // TEMPORARILY DISABLED: Allow all users to edit offers
+  const canEdit = true;
+
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({});
 
   useEffect(() => {
-    if (!hasSubscription) {
-      navigate("/dashboard?tab=subscription");
-      return;
-    }
+    // TEMPORARILY DISABLED: Allow all users to edit offers
+    // if (!hasSubscription) {
+    //   navigate("/dashboard?tab=subscription");
+    //   return;
+    // }
 
     const load = async () => {
       const snap = await getDoc(doc(db, "offers", id));

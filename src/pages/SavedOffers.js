@@ -15,6 +15,27 @@ export default function SavedOffers() {
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const removeOffer = async (offerId, savedId) => {
+    try {
+      await deleteDoc(
+        doc(
+          db,
+          "users",
+          currentUser.uid,
+          "savedOffers",
+          savedId
+        )
+      );
+      
+      // Update local state to remove the offer
+      setOffers(prev => prev.filter(o => o.id !== offerId));
+      alert("Offer removed from saved list");
+    } catch (err) {
+      console.error("Error removing saved offer:", err);
+      alert("Failed to remove offer");
+    }
+  };
+
   useEffect(() => {
     if (!currentUser) return;
 
@@ -67,17 +88,7 @@ export default function SavedOffers() {
                 <h4>{o.title}</h4>
                 <button
                   className="delete-btn"
-                  onClick={() =>
-                    deleteDoc(
-                      doc(
-                        db,
-                        "users",
-                        currentUser.uid,
-                        "savedOffers",
-                        o.savedId
-                      )
-                    )
-                  }
+                  onClick={() => removeOffer(o.id, o.savedId)}
                 >
                   Remove
                 </button>
